@@ -11,12 +11,12 @@ function Login() {
     const navigate = useNavigate ();
     const {isAuthenticated, setIsAuthenticated } = useAuth();
     const [error, setError] = useState('');
-    
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
       setError(''); 
       
-      if (isAuthenticated) {
+      if (token && isAuthenticated) {
           navigate('/'); // Redirect to home if already authenticated
       }
   }, [isAuthenticated, navigate]);

@@ -13,7 +13,7 @@ function PrivateRoute({ children , role, ...rest }) {
     console.log(isAuthenticated+"inside privayte");
     
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (!isAuthenticated || !token) {
             navigate('/login');
         }
     }, [isAuthenticated, navigate]);
