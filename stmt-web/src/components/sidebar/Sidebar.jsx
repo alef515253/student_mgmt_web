@@ -58,27 +58,35 @@ export const Sidebar = () => {
                     <PersonOutlineIcon className="icon"/>
                     <span>Students</span>
                 </li>
-                </Link>                
+                </Link>          
+                <Link to="/instructors" style={{textDecoration:"none"}}>     
                 <li>
                     <SupervisorAccountIcon className="icon"/>
-                    <span>Intructors</span>
+                    <span>Instructors</span>
                 </li>
+                </Link> 
+                <Link to="/courses" style={{textDecoration:"none"}}>
                 <li>
                     <LibraryBooksIcon className="icon"/>
                     <span>Courses</span>
                 </li>
+                </Link>
                 <li>
                     <SummarizeIcon className="icon"/>
                     <span>Thesis</span>
                 </li>
+                <Link to="/terms" style={{textDecoration:"none"}}>   
                 <li>
                     <AccessTimeIcon className="icon"/>
                     <span>Terms</span>
                 </li>
+                </Link>
+                <Link to="/termcourses" style={{textDecoration:"none"}}>
                 <li>
                     <BrowseGalleryIcon className="icon"/>
                     <span>TermCourses</span>
                 </li>
+                </Link>
                 <li>
                     <LayersIcon className="icon"/>
                     <span>StudentCourses</span>

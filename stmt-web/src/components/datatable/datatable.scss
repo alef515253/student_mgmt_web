@@ -12,6 +12,13 @@
         align-items: center;
         justify-content: space-between;
 
+        .import{
+            font-size: 18px;
+            border: 1px solid rgb(232, 227, 227);
+            padding: 10px;
+            border-radius: 5px;
+            //background-color: darkblue;
+        }
         .link{
             text-decoration: none;
             color: white;
@@ -32,12 +39,16 @@
         .viewButton{
             padding: 2px 5px;            
             border-radius: 2px;
-            color: darkblue;
+            color: 213e88;
             //border: 1px dotted rgba(0,0,139,0.596);
             cursor: pointer;
+            
     
         }
-    
+        a:link, a:visited {
+            color: blue; /* Specify your desired link color */
+            text-decoration: none; /* Remove underline if desired */
+        }
         .editButton{
             padding: 2px 5px;
             border-radius: 5px;

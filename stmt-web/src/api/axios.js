@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { getAccessToken, setAccessToken ,removeTokens } from './auth'; // These functions handle getting/setting tokens
 import { useAuth } from '../AuthProvider';
+import { toast } from 'react-toastify';
+import { toastOptions } from './toastConfig';
 
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8089/stmmgmt/v1', // Replace with your API base URL
+  baseURL: 'http://localhost:8089/stmmgmt/v1/api/stm', // Replace with your API base URL
   headers: {
     'Content-Type': 'application/json',
   },
@@ -20,6 +22,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    toast.error('Request error: ' + error.message, { ...toastOptions, type: 'error' });
     return Promise.reject(error);
   }
 );
@@ -28,6 +31,9 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   
   (response) => {
+    if (response.config.showToastOnResponse) {
+      toast.success('API call succeeded! '+response.data.message, { ...toastOptions, type: 'success' });
+    }
     return response;
   },
   async (error) => {
@@ -43,9 +49,13 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         // Handle refresh token error (e.g., log out the user)
         console.error('Refresh token error', refreshError);
-        removeTokens();       
+        removeTokens();    
+        window.location.href = '/login';   
         return Promise.reject(refreshError);
       }
+    }
+    else{
+      toast.error(error.response.data.message?error.response.data.message:error.response.data.error);
     }
     return Promise.reject(error);
   }

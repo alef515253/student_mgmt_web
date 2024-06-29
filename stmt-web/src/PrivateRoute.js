@@ -13,13 +13,15 @@ function PrivateRoute({ children , role, ...rest }) {
     console.log(isAuthenticated+"inside privayte");
     
     useEffect(() => {
-        if (!isAuthenticated || !token) {
+        if (!isAuthenticated || !token || (decodedToken.exp*1000 < (new Date()).getTime())) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
             navigate('/login');
         }
-    }, [isAuthenticated, navigate]);
+    },[] );
 
     if(token && (decodedToken.roles.indexOf(role) !== -1)){
-        console.log("inside this");
+        console.log(children);
         return children
       }
       return <Navigate to="/login" />

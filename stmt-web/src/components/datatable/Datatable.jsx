@@ -1,48 +1,15 @@
 import { Link } from "react-router-dom";
 import "./datatable.scss"
 import { DataGrid } from '@mui/x-data-grid';
+import React, { useState } from 'react';
+//import axios from 'axios';
+import axiosInstance from '../../api/axios';
+import { toast } from 'react-toastify';
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'firstName', headerName: 'First name', width: 130 },
-  { field: 'lastName', headerName: 'Last name', width: 130 },
-  {
-    field: 'age',
-    headerName: 'Age',
-   // type: 'number',
-    width: 90,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    //valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-    renderCell: (params) => {
-        return (
-            <>
-                <span>{params.row.firstName}</span>
-                <p>{params.row.id}</p>
-            </>
-        )
-    }
-  },
-];
 
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
 
-export const Datatable = () => {
+export const Datatable = ( { type, data, columnsConfig, showImport ,reload } ) => {
+
     const actionColumn = [{ field: "action", headerName:"Action", width:200,
         renderCell:()=>{
             return(
@@ -53,18 +20,73 @@ export const Datatable = () => {
             );
         }
     }]
+
+    const [file, setFile] = useState(null);
+
+    const handleFileChange = (event) => {
+        setFile(null);
+        const selectedFile = event.target.files[0];
+        const maxFileSize = 10 * 1024 * 1024; // 10 MB
+        const allowedTypes = [
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+          'application/vnd.ms-excel', // .xls
+          'text/csv' // .csv
+        ];
+
+        if (selectedFile.size > maxFileSize) {
+          toast.error('File size exceeds 10 MB limit');
+          return;
+        }
+
+        if (!allowedTypes.includes(selectedFile.type)) {
+          toast.error('Only Excel (.xlsx, .xls) and CSV (.csv) files are allowed');
+          return;
+        }
+        setFile(selectedFile);
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await axiosInstance.post('http://localhost:8089/stmmgmt/api/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                showToastOnResponse: true
+            });
+
+            console.log(response.data); 
+            reload();// Handle success response
+        } catch (error) {
+            console.error('Error uploading file:', error); // Handle error response
+        }
+    };
+
   return (
     <div className="datatable" >
           <div className="datatableTitle">
+          {showImport && <div className="import">
             Import Students
+           <form onSubmit={handleSubmit}>
+              <input type="file" onChange={handleFileChange} />
+              <button type="submit">Upload File</button>
+            </form>
+
+           </div>}
+
             <Link to="/students/new" className="link" >
-            Add Student
+            Add {type}
             </Link>
+
           </div>
         
         <DataGrid 
-        rows={rows}
-        columns={columns.concat(actionColumn)}
+        rows={data}
+        columns={columnsConfig.concat(actionColumn)}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 10 },
